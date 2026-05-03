@@ -1,5 +1,6 @@
 package com.example.Post_Services.controller;
 
+import com.example.Post_Services.auth.AuthContextHolder;
 import com.example.Post_Services.dto.PostCreateRequestDto;
 import com.example.Post_Services.dto.PostDto;
 import com.example.Post_Services.entity.Post;
@@ -27,6 +28,7 @@ public class PostController {
 
     @GetMapping("/{postId}")
     public ResponseEntity<PostDto> getPost(@PathVariable Long postId) {
+        Long userId = AuthContextHolder.getCurrentUserId();
         PostDto post = postServices.getPostById(postId);
         return ResponseEntity.ok(post);
     }

@@ -1,5 +1,8 @@
 package com.example.Post_Services.service;
 
+import com.example.Post_Services.auth.AuthContextHolder;
+import com.example.Post_Services.client.ConnectionsServiceClient;
+import com.example.Post_Services.dto.PersonDto;
 import com.example.Post_Services.dto.PostCreateRequestDto;
 import com.example.Post_Services.dto.PostDto;
 import com.example.Post_Services.entity.Post;
@@ -17,6 +20,7 @@ import java.util.stream.Collectors;
 public class PostServices {
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;
+    private final ConnectionsServiceClient connectionsServiceClient;
 
     public PostDto createPost(PostCreateRequestDto postDto , Long userId) {
         Post post = modelMapper.map(postDto, Post.class);
@@ -27,6 +31,13 @@ public class PostServices {
     }
 
     public PostDto getPostById(Long postId) {
+
+        Long userId = AuthContextHolder.getCurrentUserId();
+
+//        TODO: Remove in future
+//        Call the Connections Service from the Posts Service and pass the userId inside the headers
+
+        List<PersonDto> personDtoList = connectionsServiceClient.getFirstDegreeConnections(userId);
         Post post = postRepository.findById(postId).orElseThrow(() ->new ResourceNotFoundException("Post Not found"));
         return modelMapper.map(post, PostDto.class);
     }
