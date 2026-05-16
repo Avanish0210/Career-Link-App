@@ -4,12 +4,14 @@ import com.example.User_Services.dto.LoginRequestDto;
 import com.example.User_Services.dto.SignupRequestDto;
 import com.example.User_Services.dto.UserDto;
 import com.example.User_Services.entity.User;
+import com.example.User_Services.event.UserCreatedEvent;
 import com.example.User_Services.exceptions.BadRequestException;
 import com.example.User_Services.exceptions.ResourceNotFoundException;
 import com.example.User_Services.repository.UserRepository;
 import com.example.User_Services.utils.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +20,8 @@ public class AuthService {
     private final JwtService jwtService;
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
+    private final KafkaTemplate<Long, UserCreatedEvent> userCreatedEventKafkaTemplate;
+
 
     public UserDto signup(SignupRequestDto signupRequestDto) {
         boolean exist = userRepository.existsByEmail(signupRequestDto.getEmail());
@@ -29,6 +33,11 @@ public class AuthService {
         user.setPassword(PasswordUtil.hasPassword(signupRequestDto.getPassword()));
 
         User saveUser = userRepository.save(user);
+        UserCreatedEvent userCreatedEvent = UserCreatedEvent.builder()
+                .userId(saveUser.getId())
+                .name(saveUser.getName())
+                .build();
+        userCreatedEventKafkaTemplate.send("user_created_topic" , userCreatedEvent);
         return modelMapper.map(saveUser, UserDto.class);
 
     }

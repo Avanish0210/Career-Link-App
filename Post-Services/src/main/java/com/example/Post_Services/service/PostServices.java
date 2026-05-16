@@ -32,12 +32,6 @@ public class PostServices {
 
     public PostDto getPostById(Long postId) {
 
-        Long userId = AuthContextHolder.getCurrentUserId();
-
-//        TODO: Remove in future
-//        Call the Connections Service from the Posts Service and pass the userId inside the headers
-
-        List<PersonDto> personDtoList = connectionsServiceClient.getFirstDegreeConnections(userId);
         Post post = postRepository.findById(postId).orElseThrow(() ->new ResourceNotFoundException("Post Not found"));
         return modelMapper.map(post, PostDto.class);
     }

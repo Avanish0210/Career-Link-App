@@ -1,5 +1,5 @@
 spring.application.name: api-gateway
-jwt.secretKey: jbhadbuehasndlewidjjedandnwledjiwjendlkanklenilopoqw
+jwt.secretKey: sjhbdfjsajfioasjefpoijwejfioajefjwesoprjpowy23u4irgbwebayiedgiuqwgwk
 server.port: 8080
 eureka.client.service-url.defaultZone: http://localhost:8761/eureka
 
@@ -8,7 +8,7 @@ spring:
     gateway:
       routes:
         - id: Post-Services
-          uri: lb://POST-SERVICE
+          uri: lb://Post-Services
           predicates:
             - Path=/api/v1/posts/**
           filters:
@@ -16,14 +16,14 @@ spring:
             - name: AuthenticationFilter
 
         - id: User-Services
-          uri: lb://USER-SERVICE
+          uri: lb://User-Services
           predicates:
             - Path=/api/v1/users/**
           filters:
             - StripPrefix=2
 
         - id: connections-service
-          uri: lb://CONNECTION-SERVICE
+          uri: lb://connections-service
           predicates:
             - Path=/api/v1/connections/**
           filters:

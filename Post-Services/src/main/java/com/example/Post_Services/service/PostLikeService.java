@@ -1,11 +1,16 @@
 package com.example.Post_Services.service;
 
+import com.example.Post_Services.auth.AuthContextHolder;
+import com.example.Post_Services.entity.Post;
 import com.example.Post_Services.entity.PostLike;
+import com.example.Post_Services.event.PostLiked;
 import com.example.Post_Services.exception.BadRequestException;
 import com.example.Post_Services.exception.ResourceNotFoundException;
 import com.example.Post_Services.repository.PostLikeRepository;
 import com.example.Post_Services.repository.PostRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,10 +19,17 @@ public class PostLikeService {
     private final PostLikeRepository postLikeRepository;
     private final PostRepository postRepository;
 
+    private final KafkaTemplate<Long , PostLiked> postLikedKafkaTemplate;
 
-    public void likePostByPostId(long postId , Long userId) {
+    @Transactional
+    public void likePostByPostId(long postId) {
+        Long userId = AuthContextHolder.getCurrentUserId();
         boolean isExist = postRepository.existsById(postId);
         if(!isExist) throw new ResourceNotFoundException("Post Not Found");
+
+        Post post = postRepository.findById(postId).orElseThrow(()
+                -> new ResourceNotFoundException("Post not found with ID: "+postId));
+
 
         boolean alreadyLike = postLikeRepository.existsByUserIdAndPostId(postId , userId);
         if(alreadyLike) throw new BadRequestException("Cannot like the same post again.");
@@ -27,10 +39,19 @@ public class PostLikeService {
         postLike.setUserId(userId);
         postLikeRepository.save(postLike);
 
+        PostLiked postLiked = PostLiked.builder()
+                .postId(postId)
+                .likedByUserId(userId)
+                .ownerUserId(post.getUserId())
+                .build();
+        postLikedKafkaTemplate.send("post_liked_topic" , postLiked);
+
+
     }
 
 
-    public void unlikePost(Long postId , Long userId) {
+    public void unlikePost(Long postId) {
+        Long userId = AuthContextHolder.getCurrentUserId();
         boolean isExist = postRepository.existsById(postId);
         if(!isExist) throw new ResourceNotFoundException("Post Not Found");
 
