@@ -14,7 +14,7 @@ public class UserServiceConsumer {
 
     private final PersonService personService;
 
-    @KafkaListener(topics = "user-created_topic")
+    @KafkaListener(topics = "user_created_topic")
     public void handlePersonCreated(UserCreatedEvent userCreatedEvent){
         log.info("handlePersonCreated: {}", userCreatedEvent);
         personService.createPerson(userCreatedEvent.getUserId() , userCreatedEvent.getName());
