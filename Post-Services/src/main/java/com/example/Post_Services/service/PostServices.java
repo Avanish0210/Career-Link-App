@@ -48,8 +48,9 @@ public class PostServices {
                     .content(post.getContent())
                     .userId(person.getUserId())
                     .ownerUserId(userId)
+                    .imageUrl(imageUrl.getBody())
                     .build();
-            postCreatedKafkaTemplate.send("post_created_topic", postCreated);
+            postCreatedKafkaTemplate.send("post_created_topic",userId, postCreated);
         }
 
         return modelMapper.map(savePost, PostDto.class);
