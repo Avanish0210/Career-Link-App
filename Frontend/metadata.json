@@ -1,0 +1,6 @@
+{
+  "name": "Career-Link App",
+  "description": "A premium, modern professional network platform styled with a Midnight Obsidian and Aurora Cyan glassmorphic design system.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

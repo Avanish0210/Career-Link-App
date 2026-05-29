@@ -11,7 +11,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>Post-Services</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Post-Services</name>
+	<name>post-service</name>
 	<description>Posts Service in LinkedIn Project</description>
 	<url/>
 	<licenses>
@@ -107,6 +107,27 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.4.4</version>
+                <configuration>
+                    <to>
+                        <image>docker.io/avanish0210/careerlink-app-${project.name}:${project.version}</image>
+                        <tags>
+                            <tag>latest</tag>
+                        </tags>
+                    </to>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

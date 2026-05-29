@@ -7,16 +7,16 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: Post-Services
-          uri: lb://Post-Services
+        - id: post-service
+          uri: lb://post-service
           predicates:
             - Path=/api/v1/posts/**
           filters:
             - StripPrefix=2
             - name: AuthenticationFilter
 
-        - id: User-Services
-          uri: lb://User-Services
+        - id: user-service
+          uri: lb://user-service
           predicates:
             - Path=/api/v1/users/**
           filters:
@@ -29,4 +29,3 @@ spring:
           filters:
             - StripPrefix=2
             - name: AuthenticationFilter
-
